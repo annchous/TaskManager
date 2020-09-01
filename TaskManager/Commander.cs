@@ -24,8 +24,12 @@ namespace TaskManager
 
         public void All()
         {
+            var sortedTasks = from task in tasks
+                              orderby task.isComplited()
+                              select task;
+
             Console.WriteLine("Task ID\t\tTask info\n");
-            foreach (var task in tasks)
+            foreach (var task in sortedTasks)
             {
                 Console.WriteLine($"{task.getId()}\t\t{task.getTask()}");
             }
@@ -63,6 +67,23 @@ namespace TaskManager
                     this.Add(inputFile.ReadLine());
                 }
             }
+        }
+
+        public void Complete(int id)
+        {
+            var toCompleteTask = tasks.Where(x => x.getId() == id).Select(x => x).First();
+            toCompleteTask.setCompleted();
+        }
+
+        public void Completed()
+        {
+            Console.WriteLine("\tCompleted tasks\n");
+            foreach (var task in tasks)
+            {
+                if (task.isComplited())
+                    Console.WriteLine($"{task.getTask()}");
+            }
+            Console.WriteLine();
         }
     }
 }

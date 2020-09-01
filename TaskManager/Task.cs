@@ -30,5 +30,10 @@ namespace TaskManager
         {
             return completed;
         }
+
+        public void setCompleted()
+        {
+            this.completed = true;
+        }
     }
 }

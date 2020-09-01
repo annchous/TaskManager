@@ -27,6 +27,10 @@ namespace TaskManager
                 command = "/save";
             else if (line[0].ToString() == "/load")
                 command = "/load";
+            else if (line[0].ToString() == "/complete")
+                command = "/complete";
+            else if (line[0].ToString() == "/completed")
+                command = "/completed";
         }
 
         public void СommandProcessing()
@@ -48,6 +52,12 @@ namespace TaskManager
                     break;
                 case "/load":
                     commander.Load(args);
+                    break;
+                case "/complete":
+                    commander.Complete(Convert.ToInt32(args));
+                    break;
+                case "/completed":
+                    commander.Completed();
                     break;
             }
         }
