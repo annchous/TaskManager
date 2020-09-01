@@ -40,6 +40,9 @@ namespace TaskManager
                 case "/completed":
                     commander.Completed();
                     break;
+                case "/exit":
+                    Environment.Exit(0);
+                    break;
             }
         }
 
