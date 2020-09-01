@@ -11,7 +11,7 @@ Implement an application that handles commands:
 - [X] **/completed** - displays all completed tasks
 #### Sectarian Level
 *The ability to specify the due date:*
-- [ ] Info about deadlines in /all
+- [ ] Info about **deadlines** in /all
 - [ ] **/today** - displays tasks with the deadline for the current day
 *Grouping tasks:*
 - [ ] **/create-group** *group-name* - creates a group for tasks
