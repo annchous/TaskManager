@@ -13,6 +13,7 @@ Implement an application that handles commands:
 *The ability to specify the due date:*
 - [ ] Info about **deadlines** in /all
 - [ ] **/today** - displays tasks with the deadline for the current day
+
 *Grouping tasks:*
 - [ ] **/create-group** *group-name* - creates a group for tasks
 - [ ] **/delete-group** *group-name* - removes the group with the specified name
