@@ -8,4 +8,4 @@ Implement an application that handles commands:
 - [X] **/save** *file-name.txt* - saves all current tasks to the specified file
 - [X] **/load** *file-name.txt*
 - [ ] **/complete** *id* - indicates that the task is completed. *Completed tasks are displayed at the end of the list and are marked as completed.*
-- [ ] **/completed** - displays all completed tasks
+- [X] **/completed** - displays all completed tasks
