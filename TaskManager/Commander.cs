@@ -38,8 +38,15 @@ namespace TaskManager
 
         public void Delete(int id)
         {
-            var toDeleteTask = tasks.Where(x => x.getId() == id).Select(x => x).First();
-            tasks.Remove(toDeleteTask);
+            try
+            {
+                var toDeleteTask = tasks.Where(x => x.getId() == id).Select(x => x).First();
+                tasks.Remove(toDeleteTask);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         public void Save(string fileName)
