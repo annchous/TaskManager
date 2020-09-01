@@ -7,7 +7,6 @@ namespace TaskManager
     class CommandParser
     {
         public Commander commander = new Commander();
-        public string command;
         string[] line;
 
         public void ReadCommand()
@@ -15,28 +14,10 @@ namespace TaskManager
             this.line = Console.ReadLine().Split(" ");
         }
 
-        public void GetCommand()
-        {
-            if (line[0].ToString() == "/add")
-                command = "/add";
-            else if (line[0].ToString() == "/all")
-                command = "/all";
-            else if (line[0].ToString() == "/delete")
-                command = "/delete";
-            else if (line[0].ToString() == "/save")
-                command = "/save";
-            else if (line[0].ToString() == "/load")
-                command = "/load";
-            else if (line[0].ToString() == "/complete")
-                command = "/complete";
-            else if (line[0].ToString() == "/completed")
-                command = "/completed";
-        }
-
         public void СommandProcessing()
         {
             string args = String.Join(' ', line, 1, line.Length - 1);
-            switch (command)
+            switch (line[0].ToString())
             {
                 case "/add":
                     commander.Add(args);
@@ -65,7 +46,6 @@ namespace TaskManager
         public void Run()
         {
             this.ReadCommand();
-            this.GetCommand();
             this.СommandProcessing();
         }
     }
