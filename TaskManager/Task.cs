@@ -6,34 +6,14 @@ namespace TaskManager
 {
     class Task
     {
-        private int id;
-        private string task;
-        private bool completed;
+        public int Id { get; }
+        public string Description { get; set; }
+        public bool Status { get; set; }
 
-        public Task(int id, string task)
+        public Task(int id, string description)
         {
-            this.id = id;
-            this.task = task;
-        }
-
-        public int getId()
-        {
-            return id;
-        }
-
-        public string getTask()
-        {
-            return task;
-        }
-
-        public bool isComplited()
-        {
-            return completed;
-        }
-
-        public void setCompleted()
-        {
-            this.completed = true;
+            Id = id;
+            Description = description;
         }
     }
 }

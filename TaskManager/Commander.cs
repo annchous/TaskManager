@@ -25,13 +25,13 @@ namespace TaskManager
         public void All()
         {
             var sortedTasks = from task in tasks
-                              orderby task.isComplited()
+                              orderby task.Status
                               select task;
 
             Console.WriteLine("Task ID\t\tTask info\n");
             foreach (var task in sortedTasks)
             {
-                Console.WriteLine($"{task.getId()}\t\t{task.getTask()}");
+                Console.WriteLine($"{task.Id}\t\t{task.Description}");
             }
             Console.WriteLine();
         }
@@ -40,7 +40,7 @@ namespace TaskManager
         {
             try
             {
-                var toDeleteTask = tasks.Where(x => x.getId() == id).Select(x => x).First();
+                var toDeleteTask = tasks.First(x => x.Id == id);
                 tasks.Remove(toDeleteTask);
             }
             catch (Exception e)
@@ -57,7 +57,7 @@ namespace TaskManager
             {
                 foreach (var task in tasks)
                 {
-                    outputFile.Write(task.getTask());
+                    outputFile.Write(task.Id);
                 }
                 
             }
@@ -78,8 +78,8 @@ namespace TaskManager
 
         public void Complete(int id)
         {
-            var toCompleteTask = tasks.Where(x => x.getId() == id).Select(x => x).First();
-            toCompleteTask.setCompleted();
+            var toCompleteTask = tasks.First(x => x.Id == id);
+            toCompleteTask.Status = true;
         }
 
         public void Completed()
@@ -87,8 +87,8 @@ namespace TaskManager
             Console.WriteLine("\tCompleted tasks\n");
             foreach (var task in tasks)
             {
-                if (task.isComplited())
-                    Console.WriteLine($"{task.getTask()}");
+                if (task.Status)
+                    Console.WriteLine($"{task.Description}");
             }
             Console.WriteLine();
         }

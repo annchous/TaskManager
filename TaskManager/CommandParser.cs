@@ -9,13 +9,9 @@ namespace TaskManager
         public Commander commander = new Commander();
         string[] line;
 
-        public void ReadCommand()
+        public void Run()
         {
-            this.line = Console.ReadLine().Split(" ");
-        }
-
-        public void СommandProcessing()
-        {
+            line = Console.ReadLine().Split(" ");
             string args = String.Join(' ', line, 1, line.Length - 1);
             switch (line[0].ToString())
             {
@@ -40,16 +36,10 @@ namespace TaskManager
                 case "/completed":
                     commander.Completed();
                     break;
-                case "/exit":
-                    Environment.Exit(0);
+                default:
+                    Console.WriteLine($"Invalid command: {line[0].ToString()}\n");
                     break;
             }
-        }
-
-        public void Run()
-        {
-            this.ReadCommand();
-            this.СommandProcessing();
         }
     }
 }
