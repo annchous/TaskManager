@@ -92,5 +92,22 @@ namespace TaskManager
             }
             Console.WriteLine();
         }
+
+        public void SetDeadline(int id, string date)
+        {
+            var selectedTask = tasks.First(x => x.Id == id);
+            selectedTask.Deadline = date;
+        }
+
+        public void Today()
+        {
+            Console.WriteLine("\tToday's deadlines\n");
+            foreach (var task in tasks)
+            {
+                if (task.Deadline == DateTime.Now.ToShortDateString())
+                    Console.WriteLine($"{task.Description}");
+            }
+            Console.WriteLine();
+        }
     }
 }

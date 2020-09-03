@@ -9,7 +9,14 @@ namespace TaskManager
             CommandParser commandParser = new CommandParser();
             while (true)
             {
-                commandParser.Run();
+                try
+                {
+                    commandParser.Run();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
             }
         }
     }

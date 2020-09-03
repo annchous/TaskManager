@@ -36,6 +36,13 @@ namespace TaskManager
                 case "/completed":
                     commander.Completed();
                     break;
+                case "/setdeadline":
+                    var splittedArgs = args.Split(" ");
+                    commander.SetDeadline(Convert.ToInt32(splittedArgs[0]), splittedArgs[1]);
+                    break;
+                case "/today":
+                    commander.Today();
+                    break;
                 default:
                     Console.WriteLine($"Invalid command: {line[0].ToString()}\n");
                     break;
