@@ -28,10 +28,10 @@ namespace TaskManager
                               orderby task.Status
                               select task;
 
-            Console.WriteLine("Task ID\t\tTask info\n");
+            Console.WriteLine("Task ID\t\tTask info\t\tDeadline\n");
             foreach (var task in sortedTasks)
             {
-                Console.WriteLine($"{task.Id}\t\t{task.Description}");
+                Console.WriteLine($"{task.Id}\t\t{task.Description}\t\t\t{task.Deadline}");
             }
             Console.WriteLine();
         }
