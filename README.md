@@ -21,3 +21,12 @@ Implement an application that handles commands:
 - [ ] **/delete-from-group** *id group-name* - removes a task with the specified id from the specified group
 - [ ] Tasks that are in the group should be displayed in a **nested list** when /all is executed
 - [ ] **/completed** *group-name* - displays all completed tasks in the group
+
+*Subtasks*
+- [ ] **/add-subtask** *id subtask-info* - adds a subtask to the selected task
+- [ ] **/complete** *id* supporting for a subtask
+- [ ] Tasks with subtasks should display information about **how many subtasks** have been **completed** in the "3/4" format.
+
+*Error handling*
+- [ ] Missing files, incorrect input format.
+- [ ] Corner cases (e.g. one task cannot be added twice).
