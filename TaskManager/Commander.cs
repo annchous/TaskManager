@@ -28,10 +28,10 @@ namespace TaskManager
                               orderby task.Status
                               select task;
 
-            Console.WriteLine("Task ID\t\tTask info\t\tDeadline\n");
+            Console.WriteLine("{0, -20} {1, -50} {2, 30}\n", "Task ID", "Description", "Deadline");
             foreach (var task in sortedTasks)
             {
-                Console.WriteLine($"{task.Id}\t\t{task.Description}\t\t\t{task.Deadline}");
+                Console.WriteLine("{0, -20} {1, -50} {2, 30}", task.Id, task.Description, task.Deadline.ToShortDateString());
             }
             Console.WriteLine();
         }
@@ -84,11 +84,12 @@ namespace TaskManager
 
         public void Completed()
         {
-            Console.WriteLine("\tCompleted tasks\n");
+            Console.WriteLine("{0, 40}\n", "Completed tasks");
+            Console.WriteLine("{0, -20} {1, -50}\n", "Task ID", "Description");
             foreach (var task in tasks)
             {
                 if (task.Status)
-                    Console.WriteLine($"{task.Description}");
+                    Console.WriteLine("{0, -20} {1, -50}", task.Id, task.Description);
             }
             Console.WriteLine();
         }
@@ -96,16 +97,17 @@ namespace TaskManager
         public void SetDeadline(int id, string date)
         {
             var selectedTask = tasks.First(x => x.Id == id);
-            selectedTask.Deadline = date;
+            selectedTask.Deadline = DateTime.Parse(date);
         }
 
         public void Today()
         {
-            Console.WriteLine("\tToday's deadlines\n");
+            Console.WriteLine("{0, 40}\n", "Today's deadline tasks");
+            Console.WriteLine("{0, -20} {1, -50}\n", "Task ID", "Description");
             foreach (var task in tasks)
             {
-                if (task.Deadline == DateTime.Now.ToShortDateString())
-                    Console.WriteLine($"{task.Description}");
+                if (task.Deadline.ToShortDateString() == DateTime.Now.ToShortDateString())
+                    Console.WriteLine("{0, -20} {1, -50}", task.Id, task.Description);
             }
             Console.WriteLine();
         }
