@@ -17,7 +17,7 @@ namespace TaskManager
 
         public void Add(string task)
         {
-            Task newTask = new Task(identificator, task);
+            Task newTask = new Task('T' + identificator.ToString(), task);
             tasks.Add(newTask);
             identificator += 1;
         }
@@ -28,15 +28,32 @@ namespace TaskManager
                               orderby task.Status
                               select task;
 
-            Console.WriteLine("{0, -20} {1, -50} {2, 30}\n", "Task ID", "Description", "Deadline");
+            Console.WriteLine("{0, -20} {1, -20} {2, -50} {3, 20}\n", "Task ID", "Type", "Description", "Deadline");
             foreach (var task in sortedTasks)
             {
-                Console.WriteLine("{0, -20} {1, -50} {2, 30}", task.Id, task.Description, task.Deadline.ToShortDateString());
+                if (task.subtasks.Count == 0)
+                    Console.WriteLine("{0, -20} {1, -20} {2, -50} {3, 20}",
+                        task.Id, task.GetType().Name, task.Description,
+                        task.Deadline.ToShortDateString());
+                else
+                {
+                    Console.WriteLine("{0, -20} {1, -20} {2, -50} {3, 20}",
+                        task.Id, task.GetType().Name + " " + Convert.ToString(task.CompletedSubtasksCount()) 
+                        + "/" + Convert.ToString(task.AllSubtasksCount()), task.Description,
+                        task.Deadline.ToShortDateString());
+
+                    foreach (var subtask in task.subtasks)
+                    {
+                        Console.WriteLine("{0, -20} {1, -20} {2, -50} {3, 20}",
+                        subtask.Id, subtask.GetType().Name, subtask.Description,
+                        subtask.Deadline.ToShortDateString());
+                    }
+                }
             }
             Console.WriteLine();
         }
 
-        public void Delete(int id)
+        public void Delete(string id)
         {
             try
             {
@@ -76,10 +93,23 @@ namespace TaskManager
             }
         }
 
-        public void Complete(int id)
+        public void Complete(string id)
         {
-            var toCompleteTask = tasks.First(x => x.Id == id);
-            toCompleteTask.Status = true;
+            var toCompleteTask = (from task in tasks
+                                  where task.Id == id
+                                  select task).First();
+            if (toCompleteTask.subtasks.Count() == 0)
+                toCompleteTask.Status = true;
+            else
+            {
+                foreach (var subtask in toCompleteTask.subtasks)
+                {
+                    subtask.Status = true;
+                }
+                toCompleteTask.Status = true;
+            }
+            //var toCompleteTask = tasks.First(x => x.Id == id);
+            //toCompleteTask.Status = true;
         }
 
         public void Completed()
@@ -88,13 +118,23 @@ namespace TaskManager
             Console.WriteLine("{0, -20} {1, -50}\n", "Task ID", "Description");
             foreach (var task in tasks)
             {
-                if (task.Status)
+                if (task.subtasks.Count() == 0 && task.Status)
                     Console.WriteLine("{0, -20} {1, -50}", task.Id, task.Description);
+                else
+                {
+                    if (task.Status)
+                        Console.WriteLine("{0, -20} {1, -50}", task.Id, task.Description);
+                    foreach (var subtask in task.subtasks)
+                    {
+                        if (subtask.Status)
+                            Console.WriteLine("{0, -20} {1, -50}", subtask.Id, subtask.Description);
+                    }    
+                }
             }
             Console.WriteLine();
         }
 
-        public void SetDeadline(int id, string date)
+        public void SetDeadline(string id, string date)
         {
             var selectedTask = tasks.First(x => x.Id == id);
             selectedTask.Deadline = DateTime.Parse(date);
@@ -110,6 +150,25 @@ namespace TaskManager
                     Console.WriteLine("{0, -20} {1, -50}", task.Id, task.Description);
             }
             Console.WriteLine();
+        }
+
+        public void AddSubtask(string id, string subtask)
+        {
+            var selectedTask = tasks.First(x => x.Id == id);
+            Subtask newSubtask = new Subtask('S' + identificator.ToString(), subtask, id);
+            selectedTask.subtasks.Add(newSubtask);
+            identificator += 1;
+        }
+
+        public void CompleteSubtask(string id)
+        {
+            var toCompleteSubtask = from task in tasks
+                                    from subtask in task.subtasks
+                                    where subtask.Id == id
+                                    select subtask;
+            
+            toCompleteSubtask.First().Status = true;
+            tasks.First(x => x.Id == toCompleteSubtask.First().TaskId).CheckStatus();
         }
     }
 }

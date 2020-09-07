@@ -11,9 +11,10 @@ namespace TaskManager
 
         public void Run()
         {
+            // TO DO: to think about optimization
             line = Console.ReadLine().Split(" ");
             string args = String.Join(' ', line, 1, line.Length - 1);
-            switch (line[0].ToString())
+            switch (line[0])
             {
                 case "/add":
                     commander.Add(args);
@@ -22,7 +23,7 @@ namespace TaskManager
                     commander.All();
                     break;
                 case "/delete":
-                    commander.Delete(Convert.ToInt32(args));
+                    commander.Delete(args);
                     break;
                 case "/save":
                     commander.Save(args);
@@ -31,17 +32,25 @@ namespace TaskManager
                     commander.Load(args);
                     break;
                 case "/complete":
-                    commander.Complete(Convert.ToInt32(args));
+                    if (args.StartsWith('S'))
+                        commander.CompleteSubtask(args);
+                    else
+                        commander.Complete(args);
                     break;
                 case "/completed":
                     commander.Completed();
                     break;
                 case "/setdeadline":
-                    var splittedArgs = args.Split(" ");
-                    commander.SetDeadline(Convert.ToInt32(splittedArgs[0]), splittedArgs[1]);
+                    var deadlineArgs = args.Split(" ");
+                    commander.SetDeadline(deadlineArgs[0], deadlineArgs[1]);
                     break;
                 case "/today":
                     commander.Today();
+                    break;
+                case "/add-subtask":
+                    var subtaskArgs = args.Split(" ");
+                    var subtask = String.Join(' ', subtaskArgs, 1, subtaskArgs.Length - 1);
+                    commander.AddSubtask(subtaskArgs[0], subtask);
                     break;
                 default:
                     Console.WriteLine($"Invalid command: {line[0].ToString()}\n");
