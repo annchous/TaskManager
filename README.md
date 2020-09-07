@@ -23,9 +23,9 @@ Implement an application that handles commands:
 - [ ] **/completed** *group-name* - displays all completed tasks in the group
 
 *Subtasks*
-- [ ] **/add-subtask** *id subtask-info* - adds a subtask to the selected task
-- [ ] **/complete** *id* supporting for a subtask
-- [ ] Tasks with subtasks should display information about **how many subtasks** have been **completed** in the "3/4" format.
+- [X] **/add-subtask** *id subtask-info* - adds a subtask to the selected task
+- [X] **/complete** *id* supporting for a subtask
+- [X] Tasks with subtasks should display information about **how many subtasks** have been **completed** in the "3/4" format.
 
 *Error handling*
 - [ ] Missing files, incorrect input format.
