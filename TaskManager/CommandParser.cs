@@ -6,12 +6,18 @@ namespace TaskManager
 {
     class CommandParser
     {
-        public Commander commander = new Commander();
+        public Commander commander;
         string[] line;
+        bool _run;
 
-        public void Run()
+        public CommandParser()
         {
-            // TO DO: to think about optimization
+            commander = new Commander();
+            _run = true;
+        }
+
+        public void CommandProcessing()
+        {
             line = Console.ReadLine().Split(" ");
             string args = String.Join(' ', line, 1, line.Length - 1);
             switch (line[0])
@@ -71,9 +77,27 @@ namespace TaskManager
                     var delGroupName = String.Join(' ', delGroupArgs, 1, delGroupArgs.Length - 1);
                     commander.DeleteFromGroup(delGroupArgs[0], delGroupName);
                     break;
+                case "/exit":
+                    _run = false;
+                    break;
                 default:
                     Console.WriteLine($"Invalid command: {line[0].ToString()}\n");
                     break;
+            }
+        }
+
+        public void Run()
+        {
+            while (_run)
+            {
+                try
+                {
+                    CommandProcessing();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
             }
         }
     }

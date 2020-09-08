@@ -44,31 +44,37 @@ namespace TaskManager
             foreach (var task in sortedTasks)
             {
                 if (task.subtasks.Count == 0)
-                    Console.WriteLine("{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}",
+                    Console.WriteLine(
+                        "{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}",
                         task.Id, 
                         task.GetType().Name, 
                         task.Description,
                         task.Deadline.ToShortDateString(), 
-                        task.Status ? "Completed" : "In progress");
+                        task.Status ? "Completed" : "In progress"
+                        );
                 else
                 {
-                    Console.WriteLine("{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}",
+                    Console.WriteLine(
+                        "{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}",
                         task.Id, 
                         task.GetType().Name + " " 
                         + Convert.ToString(task.CompletedSubtasksCount()) 
                         + "/" + Convert.ToString(task.AllSubtasksCount()), 
                         task.Description,
                         task.Deadline.ToShortDateString(), 
-                        task.Status ? "Completed" : "In progress");
+                        task.Status ? "Completed" : "In progress"
+                        );
 
                     foreach (var subtask in task.subtasks)
                     {
-                        Console.WriteLine("{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}",
-                        subtask.Id, 
-                        subtask.GetType().Name, 
-                        subtask.Description,
-                        subtask.Deadline.ToShortDateString(),
-                        subtask.Status ? "Completed" : "In progress");
+                        Console.WriteLine(
+                            "{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}",
+                            subtask.Id, 
+                            subtask.GetType().Name, 
+                            subtask.Description,
+                            subtask.Deadline.ToShortDateString(),
+                            subtask.Status ? "Completed" : "In progress"
+                            );
                     }
                 }
             }
@@ -165,15 +171,28 @@ namespace TaskManager
             foreach (var task in tasks)
             {
                 if (task.subtasks.Count() == 0 && task.Status)
-                    Console.WriteLine("{0, -20} {1, -50}", task.Id, task.Description);
+                    Console.WriteLine(
+                        "{0, -20} {1, -50}", 
+                        task.Id, 
+                        task.Description
+                        );
                 else
                 {
                     if (task.Status)
-                        Console.WriteLine("{0, -20} {1, -50}", task.Id, task.Description);
+                        Console.WriteLine(
+                            "{0, -20} {1, -50}", 
+                            task.Id, 
+                            task.Description
+                            );
+
                     foreach (var subtask in task.subtasks)
                     {
                         if (subtask.Status)
-                            Console.WriteLine("{0, -20} {1, -50}", subtask.Id, subtask.Description);
+                            Console.WriteLine(
+                                "{0, -20} {1, -50}", 
+                                subtask.Id, 
+                                subtask.Description
+                                );
                     }    
                 }
             }
@@ -201,7 +220,11 @@ namespace TaskManager
             foreach (var task in tasks)
             {
                 if (task.Deadline.ToShortDateString() == DateTime.Now.ToShortDateString())
-                    Console.WriteLine("{0, -20} {1, -50}", task.Id, task.Description);
+                    Console.WriteLine(
+                        "{0, -20} {1, -50}", 
+                        task.Id, 
+                        task.Description
+                        );
             }
             Console.WriteLine();
         }
@@ -290,18 +313,32 @@ namespace TaskManager
             {
                 var currentTask = tasks.First(x => x.Id == task);
                 if (currentTask.subtasks.Count() == 0 && currentTask.Status)
-                    Console.WriteLine("{0, -20} {1, -50}", currentTask.Id, currentTask.Description);
+                    Console.WriteLine(
+                        "{0, -20} {1, -50}", 
+                        currentTask.Id, 
+                        currentTask.Description
+                        );
                 else
                 {
                     if (currentTask.Status)
-                        Console.WriteLine("{0, -20} {1, -50}", currentTask.Id, currentTask.Description);
+                        Console.WriteLine(
+                            "{0, -20} {1, -50}", 
+                            currentTask.Id, 
+                            currentTask.Description
+                            );
+
                     foreach (var subtask in currentTask.subtasks)
                     {
                         if (subtask.Status)
-                            Console.WriteLine("{0, -20} {1, -50}", subtask.Id, subtask.Description);
+                            Console.WriteLine(
+                                "{0, -20} {1, -50}", 
+                                subtask.Id, 
+                                subtask.Description
+                                );
                     }
                 }
             }
+
             Console.WriteLine();
         }
     }
