@@ -8,11 +8,13 @@ namespace TaskManager
     class Commander
     {
         public List<Task> tasks;
+        public List<Group> groups;
         private int identificator = 1;
 
         public Commander()
         {
             tasks = new List<Task>();
+            groups = new List<Group>();
         }
 
         public void Add(string task)
@@ -169,6 +171,54 @@ namespace TaskManager
             
             toCompleteSubtask.First().Status = true;
             tasks.First(x => x.Id == toCompleteSubtask.First().TaskId).CheckStatus();
+        }
+
+        public void CreateGroup(string name)
+        {
+            groups.Add(new Group(name));
+        }
+
+        public void DeleteGroup(string name)
+        {
+            groups.Remove(groups.First(x => x.Name == name));
+        }
+
+        public void AddToGroup(string id, string name)
+        {
+            groups.First(x => x.Name == name).groupTasks.Add(id);
+        }
+
+        public void DeleteFromGroup(string id, string name)
+        {
+            groups.First(x => x.Name == name).groupTasks.Remove(id);
+        }
+
+        public void CompletedInGroup(string name)
+        {
+            var groupTasks = (from g in groups
+                             where g.Name == name
+                             select g.groupTasks).First();
+
+            Console.WriteLine("{0, 40}\n", $"Completed tasks in group {name}");
+            Console.WriteLine("{0, -20} {1, -50}\n", "Task ID", "Description");
+
+            foreach (var task in groupTasks)
+            {
+                var currentTask = tasks.First(x => x.Id == task);
+                if (currentTask.subtasks.Count() == 0 && currentTask.Status)
+                    Console.WriteLine("{0, -20} {1, -50}", currentTask.Id, currentTask.Description);
+                else
+                {
+                    if (currentTask.Status)
+                        Console.WriteLine("{0, -20} {1, -50}", currentTask.Id, currentTask.Description);
+                    foreach (var subtask in currentTask.subtasks)
+                    {
+                        if (subtask.Status)
+                            Console.WriteLine("{0, -20} {1, -50}", subtask.Id, subtask.Description);
+                    }
+                }
+            }
+            Console.WriteLine();
         }
     }
 }

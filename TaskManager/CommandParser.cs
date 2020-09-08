@@ -38,7 +38,10 @@ namespace TaskManager
                         commander.Complete(args);
                     break;
                 case "/completed":
-                    commander.Completed();
+                    if (args.Length == 0)
+                        commander.Completed();
+                    else
+                        commander.CompletedInGroup(args);
                     break;
                 case "/setdeadline":
                     var deadlineArgs = args.Split(" ");
@@ -51,6 +54,22 @@ namespace TaskManager
                     var subtaskArgs = args.Split(" ");
                     var subtask = String.Join(' ', subtaskArgs, 1, subtaskArgs.Length - 1);
                     commander.AddSubtask(subtaskArgs[0], subtask);
+                    break;
+                case "/create-group":
+                    commander.CreateGroup(args);
+                    break;
+                case "/delete-group":
+                    commander.DeleteGroup(args);
+                    break;
+                case "/add-to-group":
+                    var groupArgs = args.Split(" ");
+                    var groupName = String.Join(' ', groupArgs, 1, groupArgs.Length - 1);
+                    commander.AddToGroup(groupArgs[0], groupName);
+                    break;
+                case "/delete-from-group":
+                    var delGroupArgs = args.Split(" ");
+                    var delGroupName = String.Join(' ', delGroupArgs, 1, delGroupArgs.Length - 1);
+                    commander.DeleteFromGroup(delGroupArgs[0], delGroupName);
                     break;
                 default:
                     Console.WriteLine($"Invalid command: {line[0].ToString()}\n");
