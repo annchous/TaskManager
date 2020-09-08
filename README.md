@@ -15,12 +15,12 @@ Implement an application that handles commands:
 - [X] **/today** - displays tasks with the deadline for the current day
 
 *Grouping tasks:*
-- [ ] **/create-group** *group-name* - creates a group for tasks
-- [ ] **/delete-group** *group-name* - removes the group with the specified name
-- [ ] **/add-to-group** *id group-name* - adds a task with the specified id to the specified group
-- [ ] **/delete-from-group** *id group-name* - removes a task with the specified id from the specified group
+- [X] **/create-group** *group-name* - creates a group for tasks
+- [X] **/delete-group** *group-name* - removes the group with the specified name
+- [X] **/add-to-group** *id group-name* - adds a task with the specified id to the specified group
+- [X] **/delete-from-group** *id group-name* - removes a task with the specified id from the specified group
 - [ ] Tasks that are in the group should be displayed in a **nested list** when /all is executed
-- [ ] **/completed** *group-name* - displays all completed tasks in the group
+- [X] **/completed** *group-name* - displays all completed tasks in the group
 
 *Subtasks*
 - [X] **/add-subtask** *id subtask-info* - adds a subtask to the selected task
