@@ -30,3 +30,8 @@ Implement an application that handles commands:
 *Error handling*
 - [X] Missing files, incorrect input format.
 - [X] Corner cases (e.g. one task cannot be added twice).
+
+
+
+#### An example of working
+![example](https://github.com/annchous/TaskManager/blob/master/Screenshots/tmscreen.PNG)
