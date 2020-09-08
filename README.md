@@ -19,7 +19,7 @@ Implement an application that handles commands:
 - [X] **/delete-group** *group-name* - removes the group with the specified name
 - [X] **/add-to-group** *id group-name* - adds a task with the specified id to the specified group
 - [X] **/delete-from-group** *id group-name* - removes a task with the specified id from the specified group
-- [ ] Tasks that are in the group should be displayed in a **nested list** when /all is executed
+- [X] Tasks that are in the group should be displayed in a **nested list** when /all is executed
 - [X] **/completed** *group-name* - displays all completed tasks in the group
 
 *Subtasks*
