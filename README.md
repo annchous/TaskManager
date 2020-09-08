@@ -28,5 +28,5 @@ Implement an application that handles commands:
 - [X] Tasks with subtasks should display information about **how many subtasks** have been **completed** in the "3/4" format.
 
 *Error handling*
-- [ ] Missing files, incorrect input format.
-- [ ] Corner cases (e.g. one task cannot be added twice).
+- [X] Missing files, incorrect input format.
+- [X] Corner cases (e.g. one task cannot be added twice).
