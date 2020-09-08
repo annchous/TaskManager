@@ -14,5 +14,7 @@ namespace TaskManager
             Name = name;
             groupTasks = new List<string>();
         }
+
+        public bool ContainsTask(string id) => groupTasks.Contains(id);
     }
 }

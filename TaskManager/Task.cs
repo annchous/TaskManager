@@ -29,15 +29,6 @@ namespace TaskManager
                    select subtask).Count();
         }
 
-        public int AllSubtasksCount()
-        {
-            return subtasks.Count;
-        }
-
-        public void CheckStatus()
-        {
-            if (AllSubtasksCount() == CompletedSubtasksCount())
-                Status = true;
-        }
+        public int AllSubtasksCount() => subtasks.Count;
     }
 }

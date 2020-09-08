@@ -40,25 +40,35 @@ namespace TaskManager
                               orderby task.Status
                               select task;
 
-            Console.WriteLine("{0, -20} {1, -20} {2, -50} {3, 20}\n", "Task ID", "Type", "Description", "Deadline");
+            Console.WriteLine("{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}\n", "Task ID", "Type", "Description", "Deadline", "Status");
             foreach (var task in sortedTasks)
             {
                 if (task.subtasks.Count == 0)
-                    Console.WriteLine("{0, -20} {1, -20} {2, -50} {3, 20}",
-                        task.Id, task.GetType().Name, task.Description,
-                        task.Deadline.ToShortDateString());
+                    Console.WriteLine("{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}",
+                        task.Id, 
+                        task.GetType().Name, 
+                        task.Description,
+                        task.Deadline.ToShortDateString(), 
+                        task.Status ? "Completed" : "In progress");
                 else
                 {
-                    Console.WriteLine("{0, -20} {1, -20} {2, -50} {3, 20}",
-                        task.Id, task.GetType().Name + " " + Convert.ToString(task.CompletedSubtasksCount()) 
-                        + "/" + Convert.ToString(task.AllSubtasksCount()), task.Description,
-                        task.Deadline.ToShortDateString());
+                    Console.WriteLine("{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}",
+                        task.Id, 
+                        task.GetType().Name + " " 
+                        + Convert.ToString(task.CompletedSubtasksCount()) 
+                        + "/" + Convert.ToString(task.AllSubtasksCount()), 
+                        task.Description,
+                        task.Deadline.ToShortDateString(), 
+                        task.Status ? "Completed" : "In progress");
 
                     foreach (var subtask in task.subtasks)
                     {
-                        Console.WriteLine("{0, -20} {1, -20} {2, -50} {3, 20}",
-                        subtask.Id, subtask.GetType().Name, subtask.Description,
-                        subtask.Deadline.ToShortDateString());
+                        Console.WriteLine("{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}",
+                        subtask.Id, 
+                        subtask.GetType().Name, 
+                        subtask.Description,
+                        subtask.Deadline.ToShortDateString(),
+                        subtask.Status ? "Completed" : "In progress");
                     }
                 }
             }
@@ -84,6 +94,9 @@ namespace TaskManager
             path += @$"\{fileName}";
             using (StreamWriter outputFile = new StreamWriter(path))
             {
+                if (outputFile.Equals(null))
+                    throw new FileNotFoundException("File was not found!\n");
+
                 foreach (var task in tasks)
                 {
                     try
@@ -106,6 +119,9 @@ namespace TaskManager
             path += @$"\{fileName}";
             using (StreamReader inputFile = new StreamReader(path))
             {
+                if (inputFile.Equals(null))
+                    throw new FileLoadException("File was not found!\n");
+
                 while (!inputFile.EndOfStream)
                 {
                     try
@@ -217,11 +233,6 @@ namespace TaskManager
                 toCompleteSubtask.First().Status = true;
             else
                 throw new NullReferenceException(messages.WrongAccess);
-
-            if (tasks.Contains(tasks.First(x => x.Id == toCompleteSubtask.First().TaskId)))
-                tasks.First(x => x.Id == toCompleteSubtask.First().TaskId).CheckStatus();
-            else
-                throw new Exception(messages.AccessingError);
         }
 
         public void CreateGroup(string name)
