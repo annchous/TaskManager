@@ -7,13 +7,13 @@ namespace TaskManager
     class CommandParser
     {
         public Commander commander;
-        string[] line;
-        bool _run;
+        private string[] line;
+        private bool run;
 
         public CommandParser()
         {
             commander = new Commander();
-            _run = true;
+            run = true;
         }
 
         public void CommandProcessing()
@@ -78,7 +78,7 @@ namespace TaskManager
                     commander.DeleteFromGroup(delGroupArgs[0], delGroupName);
                     break;
                 case "/exit":
-                    _run = false;
+                    run = false;
                     break;
                 default:
                     Console.WriteLine($"Invalid command: {line[0].ToString()}\n");
@@ -88,7 +88,7 @@ namespace TaskManager
 
         public void Run()
         {
-            while (_run)
+            while (run)
             {
                 try
                 {
