@@ -10,18 +10,28 @@ namespace TaskManager
         public List<Task> tasks;
         public List<Group> groups;
         private int identificator = 1;
+        Messages messages;
 
         public Commander()
         {
             tasks = new List<Task>();
             groups = new List<Group>();
+            messages = new Messages();
         }
 
         public void Add(string task)
         {
-            Task newTask = new Task('T' + identificator.ToString(), task);
-            tasks.Add(newTask);
-            identificator += 1;
+            try
+            {
+                Task newTask = new Task('T' + identificator.ToString(), task);
+                tasks.Add(newTask);
+                identificator += 1;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(messages.WrongAdding);
+                Console.WriteLine(e.Message);
+            }
         }
 
         public void All()
@@ -76,7 +86,15 @@ namespace TaskManager
             {
                 foreach (var task in tasks)
                 {
-                    outputFile.Write(task.Id);
+                    try
+                    {
+                        outputFile.Write(task.Id);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(messages.SavingError);
+                        Console.WriteLine($"Error message: {e.Message}");
+                    }
                 }
                 
             }
@@ -90,7 +108,15 @@ namespace TaskManager
             {
                 while (!inputFile.EndOfStream)
                 {
-                    this.Add(inputFile.ReadLine());
+                    try
+                    {
+                        this.Add(inputFile.ReadLine());
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(messages.WrongAdding);
+                        Console.WriteLine($"Error message: {e.Message}");
+                    }
                 }
             }
         }
@@ -100,6 +126,10 @@ namespace TaskManager
             var toCompleteTask = (from task in tasks
                                   where task.Id == id
                                   select task).First();
+
+            if (!tasks.Contains(toCompleteTask))
+                throw new NullReferenceException(messages.WrongAccess);
+
             if (toCompleteTask.subtasks.Count() == 0)
                 toCompleteTask.Status = true;
             else
@@ -110,8 +140,6 @@ namespace TaskManager
                 }
                 toCompleteTask.Status = true;
             }
-            //var toCompleteTask = tasks.First(x => x.Id == id);
-            //toCompleteTask.Status = true;
         }
 
         public void Completed()
@@ -138,8 +166,16 @@ namespace TaskManager
 
         public void SetDeadline(string id, string date)
         {
-            var selectedTask = tasks.First(x => x.Id == id);
-            selectedTask.Deadline = DateTime.Parse(date);
+            try
+            {
+                var selectedTask = tasks.First(x => x.Id == id);
+                selectedTask.Deadline = DateTime.Parse(date);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(messages.WrongAdding);
+                Console.WriteLine($"Error message: {e.Message}");
+            }
         }
 
         public void Today()
@@ -156,10 +192,18 @@ namespace TaskManager
 
         public void AddSubtask(string id, string subtask)
         {
-            var selectedTask = tasks.First(x => x.Id == id);
-            Subtask newSubtask = new Subtask('S' + identificator.ToString(), subtask, id);
-            selectedTask.subtasks.Add(newSubtask);
-            identificator += 1;
+            try
+            {
+                var selectedTask = tasks.First(x => x.Id == id);
+                Subtask newSubtask = new Subtask('S' + identificator.ToString(), subtask, id);
+                selectedTask.subtasks.Add(newSubtask);
+                identificator += 1;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(messages.WrongAdding);
+                Console.WriteLine($"Error message: {e.Message}");
+            }
         }
 
         public void CompleteSubtask(string id)
@@ -168,29 +212,58 @@ namespace TaskManager
                                     from subtask in task.subtasks
                                     where subtask.Id == id
                                     select subtask;
-            
-            toCompleteSubtask.First().Status = true;
-            tasks.First(x => x.Id == toCompleteSubtask.First().TaskId).CheckStatus();
+
+            if (toCompleteSubtask.Any())
+                toCompleteSubtask.First().Status = true;
+            else
+                throw new NullReferenceException(messages.WrongAccess);
+
+            if (tasks.Contains(tasks.First(x => x.Id == toCompleteSubtask.First().TaskId)))
+                tasks.First(x => x.Id == toCompleteSubtask.First().TaskId).CheckStatus();
+            else
+                throw new Exception(messages.AccessingError);
         }
 
         public void CreateGroup(string name)
         {
-            groups.Add(new Group(name));
+            try
+            {
+                groups.Add(new Group(name));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(messages.WrongAdding);
+                Console.WriteLine($"Error message: {e.Message}");
+            }
         }
 
         public void DeleteGroup(string name)
         {
-            groups.Remove(groups.First(x => x.Name == name));
+            if (groups.Contains(groups.First(x => x.Name == name)))
+                groups.Remove(groups.First(x => x.Name == name));
+            else
+                throw new NullReferenceException(messages.WrongAccess);
         }
 
         public void AddToGroup(string id, string name)
         {
-            groups.First(x => x.Name == name).groupTasks.Add(id);
+            try
+            {
+                groups.First(x => x.Name == name).groupTasks.Add(id);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(messages.WrongAdding);
+                Console.WriteLine($"Error message: {e.Message}");
+            }
         }
 
         public void DeleteFromGroup(string id, string name)
         {
-            groups.First(x => x.Name == name).groupTasks.Remove(id);
+            if (groups.First(x => x.Name == name).groupTasks.Contains(id))
+                groups.First(x => x.Name == name).groupTasks.Remove(id);
+            else
+                throw new NullReferenceException(messages.WrongAccess);
         }
 
         public void CompletedInGroup(string name)

@@ -24,7 +24,6 @@ namespace TaskManager
 
         public int CompletedSubtasksCount()
         {
-            // return subtasks.Select(x => x.Status == true).Count();
             return (from subtask in subtasks
                    where subtask.Status == true
                    select subtask).Count();
