@@ -16,5 +16,6 @@ namespace TaskManager
         }
 
         public bool ContainsTask(string id) => groupTasks.Contains(id);
+        public bool ContainsAnyTask() => groupTasks.Count != 0;
     }
 }

@@ -36,11 +36,20 @@ namespace TaskManager
 
         public void All()
         {
+            Console.WriteLine("{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}\n", "Task ID", "Type", "Description", "Deadline", "Status");
+
+            foreach (var g in groups)
+            {
+                if (g.ContainsAnyTask())
+                    DisplayGroup(g);
+                Console.WriteLine();
+            }
+
             var sortedTasks = from task in tasks
+                              where !HasGroup(task.Id)
                               orderby task.Status
                               select task;
 
-            Console.WriteLine("{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}\n", "Task ID", "Type", "Description", "Deadline", "Status");
             foreach (var task in sortedTasks)
             {
                 if (task.subtasks.Count == 0)
@@ -340,6 +349,68 @@ namespace TaskManager
             }
 
             Console.WriteLine();
+        }
+
+        public bool HasGroup(string id)
+        {
+            var task = from g in groups
+                       from taskId in g.groupTasks
+                       where taskId == id
+                       select g;
+
+            return task.Any();
+        }
+
+        public void DisplayGroup(Group g)
+        {
+            Console.WriteLine(
+                        "{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}",
+                        " ",
+                        g.GetType().Name,
+                        g.Name,
+                        " ",
+                        " "
+                        );
+
+            foreach (string id in g.groupTasks)
+            {
+                var task = tasks.First(x => x.Id == id);
+
+                if (task.subtasks.Count == 0)
+                    Console.WriteLine(
+                        "{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}",
+                        task.Id,
+                        task.GetType().Name,
+                        "       " + task.Description,
+                        task.Deadline.ToShortDateString(),
+                        task.Status ? "Completed" : "In progress"
+                        );
+                else
+                {
+                    Console.WriteLine(
+                        "{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}",
+                        task.Id,
+                        task.GetType().Name + " "
+                        + Convert.ToString(task.CompletedSubtasksCount())
+                        + "/" + Convert.ToString(task.AllSubtasksCount()),
+                        "       " + task.Description,
+                        task.Deadline.ToShortDateString(),
+                        task.Status ? "Completed" : "In progress"
+                        );
+
+                    foreach (var subtask in task.subtasks)
+                    {
+                        Console.WriteLine(
+                            "{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}",
+                            subtask.Id,
+                            subtask.GetType().Name,
+                            "       " + subtask.Description,
+                            subtask.Deadline.ToShortDateString(),
+                            subtask.Status ? "Completed" : "In progress"
+                            );
+                    }
+                }
+            }
         }
     }
 }
