@@ -35,3 +35,5 @@ Implement an application that handles commands:
 
 #### An example of working
 ![example](https://github.com/annchous/TaskManager/blob/master/Screenshots/tmscreen.PNG)
+
+#### Total lines: 618
