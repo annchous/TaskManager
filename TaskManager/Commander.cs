@@ -25,7 +25,7 @@ namespace TaskManager
 
         public void Add(string task)
         {
-            if (tasks.Contains(tasks.First(x => x.Description == task)))
+            if (tasks.Contains(tasks.FirstOrDefault(x => x.Description == task)))
                 throw new TaskAlreadyExistsException(OutputText.TaskAlreadyExists);
             else
             {
@@ -37,7 +37,7 @@ namespace TaskManager
 
         public void AddSubtask(string id, string subtask)
         {
-            if (!tasks.Contains(tasks.First(x => x.Id == id)))
+            if (!tasks.Contains(tasks.FirstOrDefault(x => x.Id == id)))
                 throw new TaskNotFoundException(OutputText.TaskNotFound);
 
             var selectedTask = tasks.First(x => x.Id == id);
@@ -70,7 +70,7 @@ namespace TaskManager
 
         public void CompleteSubtask(string id)
         {
-            if (!tasks.Contains(tasks.Select(x => x.subtasks.Where(x => x.Id == id).First()).First()))
+            if (!tasks.Select(x => x.ContainsSubtask(id)).First())
                 throw new TaskNotFoundException(OutputText.SubtaskNotFound);
 
             var toCompleteSubtask = tasks.Select(x => x.subtasks.Where(x => x.Id == id).First()).First();
@@ -79,7 +79,7 @@ namespace TaskManager
 
         public void CreateGroup(string name)
         {
-            if (groups.Contains(groups.First(x => x.Name == name)))
+            if (groups.Contains(groups.FirstOrDefault(x => x.Name == name)))
                 throw new GroupAlreadyExistsException(OutputText.GroupAlreadyExists);
             groups.Add(new Group(name));
         }
@@ -94,7 +94,7 @@ namespace TaskManager
 
         public void AddToGroup(string id, string name)
         {
-            if (!groups.Contains(groups.First(x => x.Name == name)))
+            if (!groups.Contains(groups.FirstOrDefault(x => x.Name == name)))
                 throw new GroupNotFoundException(OutputText.GroupNotFound);
 
             if (groups.First(x => x.Name == name).groupTasks.Contains(id))

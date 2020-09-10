@@ -38,16 +38,10 @@ namespace TaskManager
                     commander.Load(args);
                     break;
                 case "/complete":
-                    if (args.StartsWith('S'))
-                        commander.CompleteSubtask(args);
-                    else
-                        commander.Complete(args);
+                    Complete(args);
                     break;
                 case "/completed":
-                    if (args.Length == 0)
-                        commander.Completed();
-                    else
-                        commander.CompletedInGroup(args);
+                    Completed(args);
                     break;
                 case "/setdeadline":
                     var deadlineArgs = args.Split(" ");
@@ -84,6 +78,22 @@ namespace TaskManager
                     Console.WriteLine($"Invalid command: {line[0].ToString()}\n");
                     break;
             }
+        }
+
+        public void Complete(string args)
+        {
+            if (args.StartsWith('S'))
+                commander.CompleteSubtask(args);
+            else
+                commander.Complete(args);
+        }
+
+        public void Completed(string args)
+        {
+            if (args.Length == 0)
+                commander.Completed();
+            else
+                commander.CompletedInGroup(args);
         }
 
         public void Run()

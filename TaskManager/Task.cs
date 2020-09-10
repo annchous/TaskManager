@@ -25,7 +25,7 @@ namespace TaskManager
 
         public int CompletedSubtasksCount() => subtasks.Select(x => x).Where(t => t.IsCompleted == true).Count();
         public int AllSubtasksCount() => subtasks.Count;
-        public string Progress() => CompletedSubtasksCount().ToString() + "/" + AllSubtasksCount().ToString();
+        public string Progress() => " " + CompletedSubtasksCount().ToString() + "/" + AllSubtasksCount().ToString();
         public void PrintTask(string progress = "") => Console.WriteLine(
             OutputText.OutputFormat,
             Id,
@@ -35,8 +35,9 @@ namespace TaskManager
             IsCompleted ? "Completed" : "In progress"
             );
 
-        public void PrintSubtasks() => subtasks.ForEach(x => { PrintTask(); });
+        public void PrintSubtasks() => subtasks.ForEach(x => { x.PrintTask(); });
         public void PrintSubtasks(List<Subtask> _subtasks) => _subtasks.ForEach(x => { PrintTask(); });
         public bool NoSubtasks() => subtasks.Count == 0;
+        public bool ContainsSubtask(string id) => subtasks.Contains(subtasks.FirstOrDefault(x => x.Id == id));
     }
 }
