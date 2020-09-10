@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TaskManager.TaskManagerException;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace TaskManager
 {
@@ -9,275 +12,76 @@ namespace TaskManager
     {
         public List<Task> tasks;
         public List<Group> groups;
-        private int identificator = 1;
-        Messages messages;
+        private int identificator;
+
+        
 
         public Commander()
         {
             tasks = new List<Task>();
             groups = new List<Group>();
-            messages = new Messages();
+            identificator = 1;
         }
 
         public void Add(string task)
         {
-            try
+            if (tasks.Contains(tasks.First(x => x.Description == task)))
+                throw new TaskAlreadyExistsException(OutputText.TaskAlreadyExists);
+            else
             {
                 Task newTask = new Task('T' + identificator.ToString(), task);
                 tasks.Add(newTask);
                 identificator += 1;
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(messages.WrongAdding);
-                Console.WriteLine(e.Message);
-            }
-        }
-
-        public void All()
-        {
-            Console.WriteLine("{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}\n", "Task ID", "Type", "Description", "Deadline", "Status");
-
-            foreach (var g in groups)
-            {
-                if (g.ContainsAnyTask())
-                    DisplayGroup(g);
-                Console.WriteLine();
-            }
-
-            var sortedTasks = from task in tasks
-                              where !HasGroup(task.Id)
-                              orderby task.Status
-                              select task;
-
-            foreach (var task in sortedTasks)
-            {
-                if (task.subtasks.Count == 0)
-                    Console.WriteLine(
-                        "{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}",
-                        task.Id, 
-                        task.GetType().Name, 
-                        task.Description,
-                        task.Deadline.ToShortDateString(), 
-                        task.Status ? "Completed" : "In progress"
-                        );
-                else
-                {
-                    Console.WriteLine(
-                        "{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}",
-                        task.Id, 
-                        task.GetType().Name + " " 
-                        + Convert.ToString(task.CompletedSubtasksCount()) 
-                        + "/" + Convert.ToString(task.AllSubtasksCount()), 
-                        task.Description,
-                        task.Deadline.ToShortDateString(), 
-                        task.Status ? "Completed" : "In progress"
-                        );
-
-                    foreach (var subtask in task.subtasks)
-                    {
-                        Console.WriteLine(
-                            "{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}",
-                            subtask.Id, 
-                            subtask.GetType().Name, 
-                            subtask.Description,
-                            subtask.Deadline.ToShortDateString(),
-                            subtask.Status ? "Completed" : "In progress"
-                            );
-                    }
-                }
-            }
-            Console.WriteLine();
-        }
-
-        public void Delete(string id)
-        {
-            try
-            {
-                var toDeleteTask = tasks.First(x => x.Id == id);
-                tasks.Remove(toDeleteTask);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-        }
-
-        public void Save(string fileName)
-        {
-            string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            path += @$"\{fileName}";
-            using (StreamWriter outputFile = new StreamWriter(path))
-            {
-                if (outputFile.Equals(null))
-                    throw new FileNotFoundException("File was not found!\n");
-
-                foreach (var task in tasks)
-                {
-                    try
-                    {
-                        outputFile.Write(task.Id);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(messages.SavingError);
-                        Console.WriteLine($"Error message: {e.Message}");
-                    }
-                }
-                
-            }
-        }
-
-        public void Load(string fileName)
-        {
-            string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            path += @$"\{fileName}";
-            using (StreamReader inputFile = new StreamReader(path))
-            {
-                if (inputFile.Equals(null))
-                    throw new FileLoadException("File was not found!\n");
-
-                while (!inputFile.EndOfStream)
-                {
-                    try
-                    {
-                        this.Add(inputFile.ReadLine());
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(messages.WrongAdding);
-                        Console.WriteLine($"Error message: {e.Message}");
-                    }
-                }
-            }
-        }
-
-        public void Complete(string id)
-        {
-            var toCompleteTask = (from task in tasks
-                                  where task.Id == id
-                                  select task).First();
-
-            if (!tasks.Contains(toCompleteTask))
-                throw new NullReferenceException(messages.WrongAccess);
-
-            if (toCompleteTask.subtasks.Count() == 0)
-                toCompleteTask.Status = true;
-            else
-            {
-                foreach (var subtask in toCompleteTask.subtasks)
-                {
-                    subtask.Status = true;
-                }
-                toCompleteTask.Status = true;
-            }
-        }
-
-        public void Completed()
-        {
-            Console.WriteLine("{0, 40}\n", "Completed tasks");
-            Console.WriteLine("{0, -20} {1, -50}\n", "Task ID", "Description");
-            foreach (var task in tasks)
-            {
-                if (task.subtasks.Count() == 0 && task.Status)
-                    Console.WriteLine(
-                        "{0, -20} {1, -50}", 
-                        task.Id, 
-                        task.Description
-                        );
-                else
-                {
-                    if (task.Status)
-                        Console.WriteLine(
-                            "{0, -20} {1, -50}", 
-                            task.Id, 
-                            task.Description
-                            );
-
-                    foreach (var subtask in task.subtasks)
-                    {
-                        if (subtask.Status)
-                            Console.WriteLine(
-                                "{0, -20} {1, -50}", 
-                                subtask.Id, 
-                                subtask.Description
-                                );
-                    }    
-                }
-            }
-            Console.WriteLine();
-        }
-
-        public void SetDeadline(string id, string date)
-        {
-            try
-            {
-                var selectedTask = tasks.First(x => x.Id == id);
-                selectedTask.Deadline = DateTime.Parse(date);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(messages.WrongAdding);
-                Console.WriteLine($"Error message: {e.Message}");
-            }
-        }
-
-        public void Today()
-        {
-            Console.WriteLine("{0, 40}\n", "Today's deadline tasks");
-            Console.WriteLine("{0, -20} {1, -50}\n", "Task ID", "Description");
-            foreach (var task in tasks)
-            {
-                if (task.Deadline.ToShortDateString() == DateTime.Now.ToShortDateString())
-                    Console.WriteLine(
-                        "{0, -20} {1, -50}", 
-                        task.Id, 
-                        task.Description
-                        );
-            }
-            Console.WriteLine();
         }
 
         public void AddSubtask(string id, string subtask)
         {
-            try
+            if (!tasks.Contains(tasks.First(x => x.Id == id)))
+                throw new TaskNotFoundException(OutputText.TaskNotFound);
+
+            var selectedTask = tasks.First(x => x.Id == id);
+            Subtask newSubtask = new Subtask('S' + identificator.ToString(), subtask);
+
+            if (selectedTask.subtasks.Contains(newSubtask))
+                throw new TaskAlreadyExistsException(OutputText.SubtaskAlreadyExists);
+            else
             {
-                var selectedTask = tasks.First(x => x.Id == id);
-                Subtask newSubtask = new Subtask('S' + identificator.ToString(), subtask, id);
                 selectedTask.subtasks.Add(newSubtask);
                 identificator += 1;
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(messages.WrongAdding);
-                Console.WriteLine($"Error message: {e.Message}");
-            }
+        }
+
+        public void Delete(string id)
+        {
+            if (tasks.Contains(tasks.First(x => x.Id == id)))
+                tasks.Remove(tasks.First(x => x.Id == id));
+            else
+                throw new TaskNotFoundException(OutputText.TaskNotFound);
+        }
+
+        public void Complete(string id)
+        {
+            if (tasks.Contains(tasks.First(x => x.Id == id)))
+                tasks.First(x => x.Id == id).IsCompleted = true;
+            else
+                throw new TaskNotFoundException(OutputText.TaskNotFound);
         }
 
         public void CompleteSubtask(string id)
         {
-            var toCompleteSubtask = from task in tasks
-                                    from subtask in task.subtasks
-                                    where subtask.Id == id
-                                    select subtask;
+            if (!tasks.Contains(tasks.Select(x => x.subtasks.Where(x => x.Id == id).First()).First()))
+                throw new TaskNotFoundException(OutputText.SubtaskNotFound);
 
-            if (toCompleteSubtask.Any())
-                toCompleteSubtask.First().Status = true;
-            else
-                throw new NullReferenceException(messages.WrongAccess);
+            var toCompleteSubtask = tasks.Select(x => x.subtasks.Where(x => x.Id == id).First()).First();
+            toCompleteSubtask.IsCompleted = true;
         }
 
         public void CreateGroup(string name)
         {
-            try
-            {
-                groups.Add(new Group(name));
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(messages.WrongAdding);
-                Console.WriteLine($"Error message: {e.Message}");
-            }
+            if (groups.Contains(groups.First(x => x.Name == name)))
+                throw new GroupAlreadyExistsException(OutputText.GroupAlreadyExists);
+            groups.Add(new Group(name));
         }
 
         public void DeleteGroup(string name)
@@ -285,132 +89,156 @@ namespace TaskManager
             if (groups.Contains(groups.First(x => x.Name == name)))
                 groups.Remove(groups.First(x => x.Name == name));
             else
-                throw new NullReferenceException(messages.WrongAccess);
+                throw new GroupNotFoundException(OutputText.GroupNotFound);
         }
 
         public void AddToGroup(string id, string name)
         {
-            try
-            {
-                groups.First(x => x.Name == name).groupTasks.Add(id);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(messages.WrongAdding);
-                Console.WriteLine($"Error message: {e.Message}");
-            }
+            if (!groups.Contains(groups.First(x => x.Name == name)))
+                throw new GroupNotFoundException(OutputText.GroupNotFound);
+
+            if (groups.First(x => x.Name == name).groupTasks.Contains(id))
+                throw new TaskAlreadyExistsException(OutputText.TaskAlreadyExists);
+
+            groups.First(x => x.Name == name).groupTasks.Add(id);
         }
 
         public void DeleteFromGroup(string id, string name)
         {
+            if (!groups.Contains(groups.First(x => x.Name == name)))
+                throw new GroupNotFoundException(OutputText.GroupNotFound);
+
             if (groups.First(x => x.Name == name).groupTasks.Contains(id))
                 groups.First(x => x.Name == name).groupTasks.Remove(id);
             else
-                throw new NullReferenceException(messages.WrongAccess);
+                throw new TaskNotFoundException(OutputText.TaskNotFound);
+        }
+
+        public void All()
+        {
+            OutputText.OutputHeader();
+
+            groups.ForEach(x => { DisplayGroup(x); });
+
+            foreach (var task in tasks.Select(x => x).Where(t => !HasGroup(t.Id)).OrderBy(t => t.IsCompleted))
+            {
+                if (task.NoSubtasks())
+                    task.PrintTask();
+                else
+                {
+                    task.PrintTask(task.Progress());
+                    task.PrintSubtasks();
+                }
+            }
+            Console.WriteLine();
+        }
+
+        public void Completed()
+        {
+            OutputText.OutputHeader();
+            foreach (var task in tasks)
+            {
+                if (task.IsCompleted && task.NoSubtasks())
+                    task.PrintTask();
+                else if (!task.NoSubtasks())
+                {
+                    if (task.IsCompleted)
+                        task.PrintTask(task.Progress());
+                    task.PrintSubtasks(task.subtasks.Select(x => x).Where(x => x.IsCompleted).ToList());
+                }
+            }
+            Console.WriteLine();
         }
 
         public void CompletedInGroup(string name)
         {
-            var groupTasks = (from g in groups
-                             where g.Name == name
-                             select g.groupTasks).First();
+            if (!groups.Contains(groups.First(x => x.Name == name)))
+                throw new GroupNotFoundException(OutputText.GroupNotFound);
 
             Console.WriteLine("{0, 40}\n", $"Completed tasks in group {name}");
-            Console.WriteLine("{0, -20} {1, -50}\n", "Task ID", "Description");
+            OutputText.OutputHeader();
 
-            foreach (var task in groupTasks)
+            foreach (var task in groups.First(x => x.Name == name).groupTasks)
             {
                 var currentTask = tasks.First(x => x.Id == task);
-                if (currentTask.subtasks.Count() == 0 && currentTask.Status)
-                    Console.WriteLine(
-                        "{0, -20} {1, -50}", 
-                        currentTask.Id, 
-                        currentTask.Description
-                        );
-                else
+                if (currentTask.IsCompleted && currentTask.NoSubtasks())
+                    currentTask.PrintTask();
+                else if (!currentTask.NoSubtasks())
                 {
-                    if (currentTask.Status)
-                        Console.WriteLine(
-                            "{0, -20} {1, -50}", 
-                            currentTask.Id, 
-                            currentTask.Description
-                            );
-
-                    foreach (var subtask in currentTask.subtasks)
-                    {
-                        if (subtask.Status)
-                            Console.WriteLine(
-                                "{0, -20} {1, -50}", 
-                                subtask.Id, 
-                                subtask.Description
-                                );
-                    }
+                    if (currentTask.IsCompleted)
+                        currentTask.PrintTask(currentTask.Progress());
+                    currentTask.PrintSubtasks(currentTask.subtasks
+                        .Select(x => x).Where(x => x.IsCompleted).ToList());
                 }
             }
-
             Console.WriteLine();
         }
 
-        public bool HasGroup(string id)
-        {
-            var task = from g in groups
-                       from taskId in g.groupTasks
-                       where taskId == id
-                       select g;
-
-            return task.Any();
-        }
+        public bool HasGroup(string id) => groups.Where(x => x.ContainsTask(id)).Any();
 
         public void DisplayGroup(Group g)
         {
-            Console.WriteLine(
-                        "{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}",
-                        " ",
-                        g.GetType().Name,
-                        g.Name,
-                        " ",
-                        " "
-                        );
+            g.PrintGroupHeader();
 
             foreach (string id in g.groupTasks)
             {
                 var task = tasks.First(x => x.Id == id);
 
                 if (task.subtasks.Count == 0)
-                    Console.WriteLine(
-                        "{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}",
-                        task.Id,
-                        task.GetType().Name,
-                        "       " + task.Description,
-                        task.Deadline.ToShortDateString(),
-                        task.Status ? "Completed" : "In progress"
-                        );
+                    task.PrintTask();
                 else
                 {
-                    Console.WriteLine(
-                        "{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}",
-                        task.Id,
-                        task.GetType().Name + " "
-                        + Convert.ToString(task.CompletedSubtasksCount())
-                        + "/" + Convert.ToString(task.AllSubtasksCount()),
-                        "       " + task.Description,
-                        task.Deadline.ToShortDateString(),
-                        task.Status ? "Completed" : "In progress"
-                        );
-
-                    foreach (var subtask in task.subtasks)
-                    {
-                        Console.WriteLine(
-                            "{0, -20} {1, -20} {2, -40} {3, 10} {4, 20}",
-                            subtask.Id,
-                            subtask.GetType().Name,
-                            "       " + subtask.Description,
-                            subtask.Deadline.ToShortDateString(),
-                            subtask.Status ? "Completed" : "In progress"
-                            );
-                    }
+                    task.PrintTask(task.Progress());
+                    task.PrintSubtasks();
                 }
             }
+        }
+
+        public void Today()
+        {
+            Console.WriteLine("{0, 40}\n", "Today's deadline tasks");
+            OutputText.OutputHeader();
+            tasks.ForEach(x => { if (x.Deadline.Date == DateTime.Now.Date) { x.PrintTask(); } });
+            Console.WriteLine();
+        }
+
+        public void Save(string fileName)
+        {
+            string path = Environment.GetFolderPath
+                (Environment.SpecialFolder.MyDocuments) 
+                + @$"\{fileName}";
+
+            if (!File.Exists(path))
+                throw new FileNotFoundException(OutputText.FileNotFound);
+
+            string json = JsonSerializer.Serialize(tasks);
+            File.WriteAllText(fileName, json);
+        }
+
+        public void Load(string fileName)
+        {
+            string path = Environment.GetFolderPath
+                (Environment.SpecialFolder.MyDocuments)
+                + @$"\{fileName}";
+
+            if (!File.Exists(path))
+                throw new FileNotFoundException(OutputText.FileNotFound);
+
+            var f = File.ReadAllText(path);
+            tasks = JsonSerializer.Deserialize<List<Task>>(f);
+        }
+
+        public void SetDeadline(string id, string date)
+        {
+            if (tasks.Contains(tasks.First(x => x.Id == id)))
+            {
+                var selectedTask = tasks.First(x => x.Id == id).Deadline;
+                if (DateTime.TryParse(date, out selectedTask)) { }
+                else
+                    throw new DeadlineNotSetException(OutputText.DeadlineNotSet);
+            }
+            else
+                throw new TaskNotFoundException(OutputText.TaskNotFound);
         }
     }
 }

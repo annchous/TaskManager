@@ -6,11 +6,8 @@ namespace TaskManager
 {
     class Subtask : Task
     {
-        public string TaskId { get; }
-        public Subtask(string id, string description, string taskId)
+        public Subtask(string id, string description)
                 : base(id, description)
-        {
-            TaskId = taskId;
-        }
+        { }
     }
 }

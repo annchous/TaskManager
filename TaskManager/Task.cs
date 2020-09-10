@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace TaskManager
     {
         public string Id { get; }
         public string Description { get; set; }
-        public bool Status { get; set; }
+        public bool IsCompleted { get; set; }
         public DateTime Deadline { get; set; }
         public List<Subtask> subtasks { get; set; }
 
@@ -17,18 +18,25 @@ namespace TaskManager
         {
             Id = id;
             Description = description;
+            IsCompleted = false;
             Deadline = DateTime.MaxValue;
-            Status = false;
             subtasks = new List<Subtask>();
         }
 
-        public int CompletedSubtasksCount()
-        {
-            return (from subtask in subtasks
-                   where subtask.Status == true
-                   select subtask).Count();
-        }
-
+        public int CompletedSubtasksCount() => subtasks.Select(x => x).Where(t => t.IsCompleted == true).Count();
         public int AllSubtasksCount() => subtasks.Count;
+        public string Progress() => CompletedSubtasksCount().ToString() + "/" + AllSubtasksCount().ToString();
+        public void PrintTask(string progress = "") => Console.WriteLine(
+            OutputText.OutputFormat,
+            Id,
+            GetType().Name + progress,
+            Description,
+            Deadline.ToShortDateString(),
+            IsCompleted ? "Completed" : "In progress"
+            );
+
+        public void PrintSubtasks() => subtasks.ForEach(x => { PrintTask(); });
+        public void PrintSubtasks(List<Subtask> _subtasks) => _subtasks.ForEach(x => { PrintTask(); });
+        public bool NoSubtasks() => subtasks.Count == 0;
     }
 }
